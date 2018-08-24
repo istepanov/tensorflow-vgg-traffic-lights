@@ -68,6 +68,7 @@ parser.add_argument('--learning_rate1', default=1e-3, type=float)
 parser.add_argument('--learning_rate2', default=1e-5, type=float)
 parser.add_argument('--dropout_keep_prob', default=0.5, type=float)
 parser.add_argument('--weight_decay', default=5e-4, type=float)
+parser.add_argument('--checkpoint', default="ckpt/model", type=str)
 
 VGG_MEAN = [123.68, 116.78, 103.94]
 
@@ -289,6 +290,8 @@ def main(args):
         correct_prediction = tf.equal(prediction, labels)
         accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
+        saver = tf.train.Saver()
+
         tf.get_default_graph().finalize()
 
     # --------------------------------------------------------------------------
@@ -334,6 +337,8 @@ def main(args):
             val_acc = check_accuracy(sess, correct_prediction, is_training, val_init_op)
             print('Train accuracy: %f' % train_acc)
             print('Val accuracy: %f\n' % val_acc)
+
+        saver.save(sess, args.checkpoint)
 
 
 if __name__ == '__main__':
