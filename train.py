@@ -290,7 +290,9 @@ def main(args):
         correct_prediction = tf.equal(prediction, labels)
         accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
-        saver = tf.train.Saver()
+        saver = tf.train.Saver(
+            var_list=tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope='vgg_16')
+        )
 
         tf.get_default_graph().finalize()
 

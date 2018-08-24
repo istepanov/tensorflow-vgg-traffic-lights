@@ -8,7 +8,7 @@ import tensorflow.contrib.slim.nets
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--image')
-parser.add_argument('--model_path', default='vgg_16.ckpt', type=str)
+parser.add_argument('--model_path', default='ckpt/model', type=str)
 
 VGG_MEAN = [123.68, 116.78, 103.94]
 
@@ -34,7 +34,7 @@ def main(args):
         prediction = tf.nn.softmax(logits)
 
     with tf.Session(graph=graph) as sess:
-        saver.restore(sess, "ckpt/model")
+        saver.restore(sess, args.model_path)
         result = sess.run(prediction)
         print(result)
 
