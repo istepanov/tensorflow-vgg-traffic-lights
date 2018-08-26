@@ -57,13 +57,13 @@ import tensorflow.contrib.slim.nets
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--train_dir', default='coco-animals/train')
-parser.add_argument('--val_dir', default='coco-animals/val')
-parser.add_argument('--model_path', default='vgg_16.ckpt', type=str)
+parser.add_argument('--train_dir', default='dataset/train')
+parser.add_argument('--val_dir', default='dataset/val')
+parser.add_argument('--model_path', default='vgg_16/vgg_16.ckpt', type=str)
 parser.add_argument('--batch_size', default=32, type=int)
 parser.add_argument('--num_workers', default=4, type=int)
-parser.add_argument('--num_epochs1', default=10, type=int)
-parser.add_argument('--num_epochs2', default=10, type=int)
+parser.add_argument('--num_epochs1', default=30, type=int)
+parser.add_argument('--num_epochs2', default=30, type=int)
 parser.add_argument('--learning_rate1', default=1e-3, type=float)
 parser.add_argument('--learning_rate2', default=1e-5, type=float)
 parser.add_argument('--dropout_keep_prob', default=0.5, type=float)
@@ -171,8 +171,12 @@ def main(args):
             crop_image = tf.random_crop(image, [224, 224, 3])                       # (3)
             flip_image = tf.image.random_flip_left_right(crop_image)                # (4)
 
+            distorted_image = tf.image.random_brightness(flip_image, max_delta=63)
+            distorted_image = tf.image.random_contrast(distorted_image, lower=0.2, upper=1.8)
+            distorted_image = tf.image.random_saturation(distorted_image, lower=0.5, upper=1.5)
+
             means = tf.reshape(tf.constant(VGG_MEAN), [1, 1, 3])
-            centered_image = flip_image - means                                     # (5)
+            centered_image = distorted_image - means                                     # (5)
 
             return centered_image, label
 

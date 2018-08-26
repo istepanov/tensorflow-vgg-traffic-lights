@@ -1,4 +1,5 @@
 import os
+import uuid
 from shutil import copyfile
 
 import yaml
@@ -8,12 +9,12 @@ def run():
     script_dir = os.path.dirname(os.path.abspath(__file__))
 
     input_filename = '../dataset/raw/bosch_traffic_lights/train.yaml'
-    target_path = '../dataset/bosch_dataset/train'
+    target_path = '../dataset/train'
 
     with open(os.path.join(script_dir, input_filename), 'r') as stream:
         anootation_data = yaml.load(stream)
 
-    for index, datum in enumerate(anootation_data):
+    for datum in anootation_data:
 
         box_labels = []
 
@@ -31,7 +32,7 @@ def run():
 
             box_labels.append(box_label)
 
-        if len(box_labels) == 1:
+        if len(box_labels) == 1 and box_labels[0] != 'off':
             source_path = os.path.abspath(
                 os.path.join(
                     script_dir,
@@ -52,7 +53,7 @@ def run():
                 os.path.join(
                     destination_dir,
                     '{}{}'.format(
-                        index,
+                        str(uuid.uuid4()),
                         os.path.splitext(
                             os.path.basename(datum['path'])
                         )[1]
