@@ -27,7 +27,7 @@ def main(args):
 
         vgg = tf.contrib.slim.nets.vgg
         with slim.arg_scope(vgg.vgg_arg_scope()):
-            logits, _ = vgg.vgg_16(images, num_classes=3, is_training=False)
+            logits, _ = vgg.vgg_16(images, num_classes=4, is_training=False)
 
         saver = tf.train.Saver()
 

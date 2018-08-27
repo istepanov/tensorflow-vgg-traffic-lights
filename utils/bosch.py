@@ -18,21 +18,24 @@ def run():
 
         box_labels = []
 
-        for bbox in datum['boxes']:
-            box_label = bbox['label'].lower().strip()
-            if box_label in [
-                'redleft', 'redright', 'redstraight', 'redstraightleft',
-            ]:
-                box_label = 'red'
-            elif box_label in [
-                'greenleft', 'greenright', 'greenstraight',
-                'greenstraightright', 'greenstraightleft',
-            ]:
-                box_label = 'green'
+        if len(datum['boxes']) == 0:
+            box_labels.append('off')
+        else:
+            for bbox in datum['boxes']:
+                box_label = bbox['label'].lower().strip()
+                if box_label in [
+                    'redleft', 'redright', 'redstraight', 'redstraightleft',
+                ]:
+                    box_label = 'red'
+                elif box_label in [
+                    'greenleft', 'greenright', 'greenstraight',
+                    'greenstraightright', 'greenstraightleft',
+                ]:
+                    box_label = 'green'
 
-            box_labels.append(box_label)
+                box_labels.append(box_label)
 
-        if len(box_labels) == 1 and box_labels[0] != 'off':
+        if len(box_labels) == 1:
             source_path = os.path.abspath(
                 os.path.join(
                     script_dir,

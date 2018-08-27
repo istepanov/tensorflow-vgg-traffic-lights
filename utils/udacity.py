@@ -9,6 +9,7 @@ LABEL_MAP = {
     0: 'red',
     1: 'yellow',
     2: 'green',
+    3: 'off',
 }
 
 
