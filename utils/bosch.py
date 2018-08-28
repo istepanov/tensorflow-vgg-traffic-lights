@@ -1,8 +1,9 @@
 import os
 import uuid
 import glob
-from shutil import copyfile
+from shutil import copyfile, rmtree
 
+from PIL import Image
 from plumbum import local
 from plumbum.cmd import sh, zip, unzip, rm
 import yaml
@@ -81,10 +82,19 @@ def run():
                 )
             )
 
-            copyfile(
-                source_path,
-                destination_path,
-            )
+            if os.path.splitext(source_path)[1].lower() == '.jpg':
+                copyfile(
+                    source_path,
+                    destination_path,
+                )
+            elif os.path.splitext(source_path)[1].lower() == '.png':
+                im = Image.open(source_path)
+                rgb_im = im.convert('RGB')
+                rgb_im.save('{}.jpg'.format(os.path.splitext(destination_path)[0]))
+            else:
+                assert False
+
+    rmtree(TEMP_DIR)
 
 
 if __name__ == '__main__':
