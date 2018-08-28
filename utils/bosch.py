@@ -1,17 +1,36 @@
 import os
 import uuid
+import glob
 from shutil import copyfile
 
+from plumbum import local
+from plumbum.cmd import sh, zip, unzip, rm
 import yaml
+
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+DATASET_DIR = os.path.abspath(
+    os.path.join(
+        SCRIPT_DIR,
+        '../dataset/raw/bosch_traffic_lights/',
+    )
+)
+TEMP_DIR = os.path.join(DATASET_DIR, 'temp')
+TARGET_DIR = os.path.abspath(
+    os.path.join(
+        SCRIPT_DIR,
+        '../dataset/train',
+    )
+)
 
 
 def run():
-    script_dir = os.path.dirname(os.path.abspath(__file__))
+    with local.cwd(DATASET_DIR):
+        sh('-c', 'cat dataset_train_rgb.zip.* > dataset_train_rgb.zip')
+        zip['-FF', 'dataset_train_rgb.zip', '--out', 'dataset_train_rgb_fixed.zip']()
+        unzip['dataset_train_rgb_fixed.zip', '-d', TEMP_DIR]()
+        rm['dataset_train_rgb_fixed.zip']['dataset_train_rgb.zip']()
 
-    input_filename = '../dataset/raw/bosch_traffic_lights/train.yaml'
-    target_path = '../dataset/train'
-
-    with open(os.path.join(script_dir, input_filename), 'r') as stream:
+    with open(os.path.join(TEMP_DIR, 'train.yaml'), 'r') as stream:
         anootation_data = yaml.load(stream)
 
     for datum in anootation_data:
@@ -38,15 +57,13 @@ def run():
         if len(box_labels) == 1:
             source_path = os.path.abspath(
                 os.path.join(
-                    script_dir,
-                    os.path.dirname(input_filename),
+                    TEMP_DIR,
                     datum['path'],
                 )
             )
             destination_dir = os.path.abspath(
                 os.path.join(
-                    script_dir,
-                    target_path,
+                    TARGET_DIR,
                     box_labels[0],
                 )
             )
